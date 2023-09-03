@@ -29,9 +29,6 @@ value(card(a, P), 1) :- card(a, P).
 cant([], 0).
 cant([H|T], R) :- cant(T, C), R is H+C.
 
-hand_values([], 0).
-hand_values([H|T], R) :- value(H, VH), hand_values(T, VT), R is VH + VT.
-
 % ...
 
 % 2. hand_values/2
@@ -41,7 +38,10 @@ hand_values([H|T], R) :- value(H, VH), hand_values(T, VT), R is VH + VT.
 % hand_values recupera todos los valores de esa mano.
 % Ejemplo: [card(4,c), card(8,t), card(q,d)].
 
-hand_values(_, _).
+% hand_values(_, _).
+
+hand_values([], 0).
+hand_values([H|T], R) :- value(H, VH), hand_values(T, VT), R is VH + VT, R < 22.
 
 % 3. hand/2
 % hand(Hand, Value).
