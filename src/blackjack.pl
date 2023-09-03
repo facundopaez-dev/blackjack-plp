@@ -29,7 +29,7 @@ value(card(a, P), 1) :- card(a, P).
 cant([], 0).
 cant([H|T], R) :- cant(T, C), R is H+C.
 
-hnad_values([], 0).
+hand_values([], 0).
 hand_values([H|T], R) :- value(H, VH), hand_values(T, VT), R is VH + VT.
 
 % ...
