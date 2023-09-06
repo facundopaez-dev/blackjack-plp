@@ -41,7 +41,10 @@ cant([H|T], R) :- cant(T, C), R is H+C.
 % hand_values(_, _).
 
 hand_values([], 0).
-hand_values([H|T], R) :- value(H, VH), hand_values(T, VT), R is VH + VT, R < 22.
+hand_values([H|T], R) :-
+    value(H, VH),
+    hand_values(T, VT),
+    R is VH + VT.
 
 % 3. hand/2
 % hand(Hand, Value).
@@ -50,7 +53,7 @@ hand_values([H|T], R) :- value(H, VH), hand_values(T, VT), R is VH + VT, R < 22.
 % hand(_, _).
 
 hand(Hand, Value) :-
-    findall(V, hand_values(Hand, V), Vs),
+    findall(V, (hand_values(Hand, V), V < 22), Vs),
     max_list(Vs, Value).
 
 % DESAFIOS -------------------------------------------------------------
@@ -62,7 +65,12 @@ hand(Hand, Value) :-
 % twentyone(_).
 twentyone(Hand) :- hand(Hand, 21).
 
-over(_).
+% over(_).
+over(Hand) :-
+    findall(R, hand_values(Hand, R), Vs),
+    min_list(Vs, Value),
+    Value > 21.
+
 blackjack(_).
 
 % INTERMEDIO -------------------------------------------------------------
