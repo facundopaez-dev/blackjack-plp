@@ -116,7 +116,22 @@ dealer_soft(Hand, stand) :-
 % dealer_hard(Hand, Action).
 % Action unifica a la acción del dealer: hit o stand. Se planta con un 17 duro.
 
-dealer_hard(_, _).
+% dealer_hard(_, _).
+dealer_hard(Hand, hit) :-
+    hand(Hand, Value),
+    Value < 17, !.
+
+dealer_hard(Hand, stand) :-
+    hand(Hand, Value),
+    Value > 17, !.
+
+dealer_hard(Hand, hit) :-
+    hand(Hand, 17),
+    soft(Hand), !.
+
+dealer_hard(Hand, stand) :-
+    hand(Hand, 17),
+    hard(Hand), !.
 
 % PRINCIPAL -------------------------------------------------------------
 
