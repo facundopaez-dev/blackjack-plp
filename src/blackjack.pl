@@ -47,7 +47,11 @@ hand_values([H|T], R) :- value(H, VH), hand_values(T, VT), R is VH + VT, R < 22.
 % hand(Hand, Value).
 % Indica el valor más alto sin pasarse de 21.
 
-hand(_, _).
+% hand(_, _).
+
+hand(Hand, Value) :-
+    findall(V, hand_values(Hand, V), Vs),
+    max_list(Vs, Value).
 
 % DESAFIOS -------------------------------------------------------------
 
