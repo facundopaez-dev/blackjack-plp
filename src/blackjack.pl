@@ -59,7 +59,9 @@ hand(Hand, Value) :-
 % 5. over/1 over(Hand). Indica si la mano se pasa.
 % 6. blackjack/1 blackjack(Hand). Indica si la mano es 21 con sólo dos cartas.
 
-twentyone(_).
+% twentyone(_).
+twentyone(Hand) :- hand(Hand, 21).
+
 over(_).
 blackjack(_).
 
