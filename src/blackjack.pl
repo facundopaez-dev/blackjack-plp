@@ -83,13 +83,21 @@ blackjack(Hand) :-
 % Indica si la mano es suave.
 
 % soft(_).
-soft(Hand) :- findall(Value, hand_values(Hand, Value), B), length(B, Cant), Cant > 1.
+% Cuando la mano arroja mas de un valor, la mano es suave
+soft(Hand) :-
+    findall(Value, hand_values(Hand, Value), B),
+    length(B, Cant),
+    Cant > 1.
 
 % 8. hard/1
 % hard(Hand).
 % Indica si la mano es dura.
 
-hard(_).
+% hard(_).
+% Cuando la mano arroja un unico valor, la mano es dura
+hard(Hand) :-
+    findall(Value, hand_values(Hand, Value), B),
+    length(B, 1).
 
 % 9. dealer_soft/2
 % dealer_soft(Hand, Action).
