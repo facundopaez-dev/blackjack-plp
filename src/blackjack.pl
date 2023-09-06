@@ -71,7 +71,10 @@ over(Hand) :-
     min_list(Vs, Value),
     Value > 21.
 
-blackjack(_).
+% blackjack(_).
+blackjack(Hand) :-
+    hand(Hand, 21),
+    length(Hand, 2).
 
 % INTERMEDIO -------------------------------------------------------------
 
