@@ -143,5 +143,7 @@ dealer_hard(Hand, stand) :-
 % Deben utilizarse todos los parámetros del jugador.
 % Puede implementar todas las reglas de soporte que considere necesaria.
 
-play(_,_,_,no_implementado).
-
+play(Hand, DealerCard, PlayedCards, Action) :-
+    hand(Hand, Value),
+    value(DealerCard, ValueDealer),
+    basic_strategy(Value, ValueDealer, Action).
