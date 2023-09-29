@@ -11,7 +11,7 @@
 % 
 % value(_, _).
 
-% value(card(2,c), 2).
+% value(card(2, c), 2).
 % El guion bajo es que no importa el valor
 value(card(V, P),V) :- card(V, P), number(V).
 value(card(j, P), 10) :- card(j, P).
@@ -25,14 +25,14 @@ value(card(a, P), 11) :- card(a, P).
 value(card(a, P), 1) :- card(a, P).
 
 cant([], 0).
-cant([H|T], R) :- cant(T, C), R is C+1.
+cant([_|T], R) :- cant(T, C), R is C+1.
 
 % 2. hand_values/2
 % hand_values(Hand, Value).
 % Una mano se representa como una lista: 
 %   [card(Number, Suit)]
 % hand_values recupera todos los valores de esa mano.
-% Ejemplo: [card(4,c), card(8,t), card(q,d)].
+% Ejemplo: [card(4, c), card(8, t), card(q, d)].
 
 % hand_values(_, _).
 
@@ -103,6 +103,9 @@ hard(Hand) :-
     findall(V, (hand_values(Hand, V),V  < 22), Vs),
     length(Vs, 1).
 
+basic_strategy(H, D, A) :- basic(hard, H, D, A), !.
+basic_strategy(H, D, A) :- basic(soft, H, D, A), !.
+
 basic_strategy(H, D, A) :- hard(H), hand(H,Value), value(D, V), basic(hard, Value, V, A).
 basic_strategy(H, D, A) :- soft(H), hand(H,Value), value(D, V), basic(soft, Value, V, A).
 
@@ -162,12 +165,148 @@ play(Hand, DealerCard, PlayedCards, Action) :-
     high_strategy(Hand,DealerCard,Action).
 
 cuenta([], 0) :- !.
-cuenta([H|T],Cuenta) :- cuentaCarta(H, V), cuenta(T, Ct), Cuenta is V + Ct.
+cuenta([H|T], Cuenta) :- cuentaCarta(H, V), cuenta(T, Ct), Cuenta is V + Ct.
 
 cuentaCarta(Card, -1) :- value(Card, V), V < 7, V > 1, !.
-cuentaCarta(Card, 1) :- value(Card, V), V > 9,!.
+cuentaCarta(Card, 1) :- value(Card, V), V > 9, !.
 cuentaCarta(Card, 0) :- value(Card, V), V < 10, V > 6.
 
-test_high([card(j,t),card(9,t),card(k,t), card(j,d), card(q,p), card(k,d), card(k,c), card(j,c)]).
+test_high([card(j, t), card(9, t), card(k, t), card(j, d), card(q, p), card(k, d), card(k, c), card(j, c)]).
 
 test_high2(Vs) :- findall(card(N, P), (card(N, P), value(card(N, P), 10)), Vs).
+
+% *************************************************** ESTADISTICA ***************************************************
+% OBJETIVO: Dada una lista de cartas jugadas informar la probabilidad de que en la siguiente tirada salga una carta
+% alta, una carta media y una carta baja.
+
+% Para cumplir este objetivo se necesitan las siguientes reglas:
+% - regla para obtener el mazo (cartas no jugadas) dada una lista de cartas jugadas.
+% - regla para contar la cantidad de cartas que hay en el mazo.
+% - regla para contar la cantidad de cartas altas que hay en el mazo.
+% - regla para contar la cantidad de cartas medias que hay en el mazo.
+% - regla para contar la cantidad de cartas bajas que hay en el mazo.
+% - regla para calcular la probabilidad de que en la siguiente tirada salga una carta alta, una carta media y una carta baja.
+
+% Cartas altas: 10, J, Q, K, A -> estas cartas suman 1.
+% Cartas medias: 7, 8, 9 -> restan 0.
+% Cartas bajas: 2, 3, 4, 5, 6 -> estas cartas restan 1.
+
+% * Reglas para imprimir datos *
+imprimir_cantidad_cartas_mazo(CartasJugadas) :-
+    obtener_mazo(CartasJugadas, Mazo),
+    cantidad_cartas_mazo(Mazo, CantidadCartasMazo),
+    write('Cantidad de cartas que hay en el mazo (cartas no jugadas): '), writeln(CantidadCartasMazo).
+
+imprimir_cantidad_cartas_altas_mazo(CartasJugadas) :-
+    obtener_mazo(CartasJugadas, Mazo),
+    cantidad_cartas_altas_mazo(Mazo, CantidadCartasAltasMazo),
+    write('Cantidad de cartas altas que hay en el mazo (cartas no jugadas): '), writeln(CantidadCartasAltasMazo).
+
+imprimir_cantidad_cartas_medias_mazo(CartasJugadas) :-
+    obtener_mazo(CartasJugadas, Mazo),
+    cantidad_cartas_medias_mazo(Mazo, CantidadCartasMediasMazo),
+    write('Cantidad de cartas medias que hay en el mazo (cartas no jugadas): '), writeln(CantidadCartasMediasMazo).
+
+imprimir_cantidad_cartas_bajas_mazo(CartasJugadas) :-
+    obtener_mazo(CartasJugadas, Mazo),
+    cantidad_cartas_bajas_mazo(Mazo, CantidadCartasBajasMazo),
+    write('Cantidad de cartas bajas que hay en el mazo (cartas no jugadas): '), writeln(CantidadCartasBajasMazo).
+
+% * Reglas de soporte *
+mazo_inicial_cartas([card(a, c), card(2, c), card(3, c), card(4, c), card(5, c), card(6, c), card(7, c), card(8, c), card(9, c), card(10, c), card(j, c), card(q, c), card(k, c), card(a, p), card(2, p), card(3, p), card(4, p), card(5, p), card(6, p), card(7, p), card(8, p), card(9, p), card(10, p), card(j, p), card(q, p), card(k, p), card(a, t), card(2, t), card(3, t), card(4, t), card(5, t), card(6, t), card(7, t), card(8, t), card(9, t), card(10, t), card(j, t), card(q, t), card(k, t), card(a, d), card(2, d), card(3, d), card(4, d), card(5, d), card(6, d), card(7, d), card(8, d), card(9, d), card(10, d), card(j, d), card(q, d), card(k, d)]).
+
+% Definicion de la regla para obtener el mazo (cartas no jugadas) dada una lista de cartas jugadas
+obtener_mazo(CartasJugadas, Mazo) :-
+    mazo_inicial_cartas(MazoInicialCartas),
+    subtract(MazoInicialCartas, CartasJugadas, Mazo).
+
+% Definicion de la regla para contar la cantidad de cartas que hay en el mazo (cartas no jugadas)
+cantidad_cartas_mazo(Mazo, CantidadCartasMazo) :- cant(Mazo, CantidadCartasMazo).
+
+% * Reglas para calcular la probabilidad de que la siguiente carta que salga del mazo (cartas no jugadas) sea alta *
+% Definicion de la regla para contar la cantidad de cartas altas que hay en el mazo (cartas no jugadas)
+cantidad_cartas_altas_mazo([], 0).
+cantidad_cartas_altas_mazo([H|T], CantidadCartasAltasMazo) :-
+    value(H, Value),
+    Value > 9,
+    cantidad_cartas_altas_mazo(T, R),
+    CantidadCartasAltasMazo is R + 1.
+
+cantidad_cartas_altas_mazo([H|T], CantidadCartasAltasMazo) :-
+    value(H, Value),
+    Value =< 9,
+    cantidad_cartas_altas_mazo(T, R),
+    CantidadCartasAltasMazo is R + 0.
+
+prob_carta_alta(CartasJugadas) :-
+    % Obtiene el mazo (cartas no jugadas)
+    obtener_mazo(CartasJugadas, Mazo),
+    cantidad_cartas_mazo(Mazo, CantidadCartasMazo),
+    cantidad_cartas_altas_mazo(Mazo, CantidadCartasAltasMazo),
+    ProbCartaAlta is CantidadCartasAltasMazo / CantidadCartasMazo * 100,
+    write('La probabilidad de que en la siguiente tirada salga una carta alta es: '), write(ProbCartaAlta), writeln(' %').
+
+% * Reglas para calcular la probabilidad de que la siguiente carta que salga del mazo (cartas no jugadas) sea media *
+% Definicion de la regla para contar la cantidad de cartas medias que hay en el mazo (cartas no jugadas)
+cantidad_cartas_medias_mazo([], 0).
+cantidad_cartas_medias_mazo([H|T], CantidadCartasMediasMazo) :-
+    value(H, Value),
+    Value >= 7,
+    Value =< 9,
+    cantidad_cartas_medias_mazo(T, R),
+    CantidadCartasMediasMazo is R + 1.
+
+cantidad_cartas_medias_mazo([H|T], CantidadCartasMediasMazo) :-
+    value(H, Value),
+    Value < 7,
+    cantidad_cartas_medias_mazo(T, R),
+    CantidadCartasMediasMazo is R + 0.
+
+cantidad_cartas_medias_mazo([H|T], CantidadCartasMediasMazo) :-
+    value(H, Value),
+    Value > 9,
+    cantidad_cartas_medias_mazo(T, R),
+    CantidadCartasMediasMazo is R + 0.
+
+prob_carta_media(CartasJugadas) :-
+    % Obtiene el mazo (cartas no jugadas)
+    obtener_mazo(CartasJugadas, Mazo),
+    cantidad_cartas_mazo(Mazo, CantidadCartasMazo),
+    cantidad_cartas_medias_mazo(Mazo, CantidadCartasMediasMazo),
+    ProbCartaMedia is CantidadCartasMediasMazo / CantidadCartasMazo * 100,
+    write('La probabilidad de que en la siguiente tirada salga una carta media es: '), write(ProbCartaMedia), writeln(' %').
+
+% * Reglas para calcular la probabilidad de que la siguiente carta que salga del mazo (cartas no jugadas) sea baja *
+% Definicion de la regla para contar la cantidad de cartas bajas que hay en el mazo (cartas no jugadas)
+cantidad_cartas_bajas_mazo([], 0).
+cantidad_cartas_bajas_mazo([H|T], CantidadCartasBajasMazo) :-
+    value(H, Value),
+    Value >= 2,
+    Value =< 6,
+    cantidad_cartas_bajas_mazo(T, R),
+    CantidadCartasBajasMazo is R + 1.
+
+cantidad_cartas_bajas_mazo([H|T], CantidadCartasBajasMazo) :-
+    value(H, Value),
+    Value > 6,
+    cantidad_cartas_bajas_mazo(T, R),
+    CantidadCartasBajasMazo is R + 0.
+
+prob_carta_baja(CartasJugadas) :-
+    % Obtiene el mazo (cartas no jugadas)
+    obtener_mazo(CartasJugadas, Mazo),
+    cantidad_cartas_mazo(Mazo, CantidadCartasMazo),
+    cantidad_cartas_bajas_mazo(Mazo, CantidadCartasBajasMazo),
+    ProbCartaBaja is CantidadCartasBajasMazo / CantidadCartasMazo * 100,
+    write('La probabilidad de que en la siguiente tirada salga una carta baja es: '), write(ProbCartaBaja), writeln(' %').
+
+play(CartasJugadas) :-
+    imprimir_cantidad_cartas_mazo(CartasJugadas),
+    imprimir_cantidad_cartas_altas_mazo(CartasJugadas),
+    imprimir_cantidad_cartas_medias_mazo(CartasJugadas),
+    imprimir_cantidad_cartas_bajas_mazo(CartasJugadas),
+    writeln(''),
+    prob_carta_alta(CartasJugadas),
+    prob_carta_media(CartasJugadas),
+    prob_carta_baja(CartasJugadas),
+    !.
