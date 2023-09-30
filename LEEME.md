@@ -8,18 +8,23 @@ Esta estrategia se puede ejecutar mediante la regla play(ManoJugador, CartaCrupi
 
 **Casos de prueba**  
 **1)** play([card(a,d), card(4,c)], card(4,p), Accion).  
+
 La mano del jugador es suave y el valor de la carta del crupier es 4. Por lo tanto, Accion debe estar unificada a hit.
 
 **2)** play([card(10,d), card(4,c)], card(5,p), Accion).  
+
 La mano del jugador es dura y el valor de la carta del crupier es 5. Por lo tanto, Accion debe estar unificada a stand.
 
 **3)** play([card(a,d), card(4,c)], card(a,p), Accion).  
+
 La mano del jugador es suave y el valor de la carta del crupier es 1 u 11. Por lo tanto, Accion debe estar unificada a stand.
 
 **4)** play([card(a,d), card(4,c)], card(10,p), Accion).  
+
 La mano del jugador es suave y el valor de la carta del crupier es 10. Por lo tanto, Accion debe estar unificada a stand.
 
 **5)** play([card(a,d), card(4,c)], card(2,p), Accion).  
+
 La mano del jugador es suave y el valor de la carta del crupier es 2. Por lo tanto, Accion debe estar unificada a stand.
 
 ### Estadística
