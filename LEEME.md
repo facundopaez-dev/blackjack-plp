@@ -1,3 +1,27 @@
+### Estrategia
+La estrategia que implemente consiste en hacer que el crupier se pase. Se juega con la ventaja de que el crupier está obligado a pedir una carta con 16 puntos o menos, así que, si la carta del crupier es un 4, un 5 o un 6, el jugador debe pedir una carta solo si tiene una mano suave. Con una sola carta se puede obtener una puntuación baja, por debajo de 16, pero el doble valor del As juega a favor del jugador, ya que el crupier esta obligado a pedir una carta, lo cual aumenta sus probabilidades de pasarse.
+
+Esta estrategia se puede ejecutar mediante la regla play(ManoJugador, CartaCrupier, Accion) implementada en el archivo blackjack.pl. Para implementar la estrategia escribí las siguientes 6 reglas en el archivo mencionado, las cuales tienen el functor croupier_pasado/3:
+- tres para cuando la mano del jugador es suave y el valor de la carta del crupier es 4, 5 o 6. Estas reglas devuelven la acción hit.
+- dos para cuando la mano del jugador es suave y el valor de la carta del crupier no es ni 4 ni 5 ni 6. Estas reglas devuelven la acción stand.
+- una para cuando la mano del jugador es dura. En este caso no importa el valor de la mano del crupier. Esta regla devuelve la acción stand.
+
+**Casos de prueba**
+**1)** play([card(a,d), card(4,c)], card(4,p), Accion).
+La mano del jugador es suave y el valor de la carta del crupier es 4. Por lo tanto, Accion debe estar unificada a hit.
+
+**2)** play([card(10,d), card(4,c)], card(5,p), Accion).
+La mano del jugador es dura y el valor de la carta del crupier es 5. Por lo tanto, Accion debe estar unificada a stand.
+
+**3)** play([card(a,d), card(4,c)], card(a,p), Accion).
+La mano del jugador es suave y el valor de la carta del crupier es 1 u 11. Por lo tanto, Accion debe estar unificada a stand.
+
+**4)** play([card(a,d), card(4,c)], card(10,p), Accion).
+La mano del jugador es suave y el valor de la carta del crupier es 10. Por lo tanto, Accion debe estar unificada a stand.
+
+**5)** play([card(a,d), card(4,c)], card(2,p), Accion).
+La mano del jugador es suave y el valor de la carta del crupier es 2. Por lo tanto, Accion debe estar unificada a stand.
+
 ### Estadística
 Como estadística implemente reglas para calcular la probabilidad de que en la siguiente tirada salga una carta alta, una carta media y una carta baja en función de las cartas jugadas.
 

@@ -175,6 +175,50 @@ test_high([card(j, t), card(9, t), card(k, t), card(j, d), card(q, p), card(k, d
 
 test_high2(Vs) :- findall(card(N, P), (card(N, P), value(card(N, P), 10)), Vs).
 
+% *************************************************** ESTRATEGIA ***************************************************
+% La estrategia consiste en hacer que el crupier se pase. Se juega con la ventaja de que el crupier esta obligado
+% a pedir una carta con 16 puntos o menos, asi que, si la carta del crupier es un 4, un 5 o un 6, el jugador debe
+% pedir una carta solo si tiene una mano suave. Con una sola carta se puede obtener una puntuacion baja, por debajo
+% de 16, pero el doble valor del As juega a favor del jugador, ya que el crupier esta obligado a pedir una carta, lo
+% cual aumenta sus probabilidades de pasarse.
+
+% Si la mano del jugador es suave y el valor de la carta del crupier es 4, 5 o 6, el jugador debe pedir una carta
+croupier_pasado(ManoJugador, ValorCartaCrupier, hit) :-
+    soft(ManoJugador),
+    ValorCartaCrupier == 4,
+    !.
+
+croupier_pasado(ManoJugador, ValorCartaCrupier, hit) :-
+    soft(ManoJugador),
+    ValorCartaCrupier == 5,
+    !.
+
+croupier_pasado(ManoJugador, ValorCartaCrupier, hit) :-
+    soft(ManoJugador),
+    ValorCartaCrupier == 6,
+    !.
+
+% Si la mano del jugador es suave y el valor de la carta del crupier es estrictamente menor a 4 o estrictamente menor
+% a 6, el jugador debe plantarse
+croupier_pasado(ManoJugador, ValorCartaCrupier, stand) :-
+    soft(ManoJugador),
+    ValorCartaCrupier < 4,
+    !.
+
+croupier_pasado(ManoJugador, ValorCartaCrupier, stand) :-
+    soft(ManoJugador),
+    ValorCartaCrupier > 6,
+    !.
+
+% Si la mano del jugador es dura no importa el valor de la carta del crupier, el jugador debe plantarse
+croupier_pasado(ManoJugador, _, stand) :-
+    hard(ManoJugador),
+    !.
+
+play(ManoJugador, CartaCrupier, Accion) :-
+    value(CartaCrupier, ValorCartaCrupier),
+    croupier_pasado(ManoJugador, ValorCartaCrupier, Accion).
+
 % *************************************************** ESTADISTICA ***************************************************
 % OBJETIVO: Dada una lista de cartas jugadas informar la probabilidad de que en la siguiente tirada salga una carta
 % alta, una carta media y una carta baja.
