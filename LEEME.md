@@ -6,7 +6,7 @@ Esta estrategia se puede ejecutar mediante la regla play(ManoJugador, CartaCrupi
 - dos para cuando la mano del jugador es suave y el valor de la carta del crupier no es ni 4 ni 5 ni 6. Estas reglas devuelven la acción stand.
 - una para cuando la mano del jugador es dura. En este caso no importa el valor de la mano del crupier. Esta regla devuelve la acción stand.
 
-**Casos de prueba**
+**Casos de prueba**  
 **1)** play([card(a,d), card(4,c)], card(4,p), Accion).
 La mano del jugador es suave y el valor de la carta del crupier es 4. Por lo tanto, Accion debe estar unificada a hit.
 
